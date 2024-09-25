@@ -14,7 +14,7 @@ const BrandSchema = new mongoose.Schema(
       lowercase: true,
       required: true,
     },
-    logo: string,
+    logo: String,
     createdBy: {
       type: Types.ObjectId,
       ref: "user",

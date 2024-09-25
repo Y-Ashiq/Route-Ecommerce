@@ -3,7 +3,9 @@ import slugify from "slugify";
 import { handleError } from "../../middleware/handleError.js";
 
 const addCategory = handleError(async (req, res, next) => {
-  req.body.slug = slugify(req.body.name);
+  //req.body.slug = slugify(req.body.name);
+  req.body.image = req.file.filename;
+  
   const category = await categoryModel.create(req.body);
   res.json({ message: "category added", category });
 });
