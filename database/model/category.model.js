@@ -1,4 +1,6 @@
 import mongoose, { Types } from "mongoose";
+import 'dotenv/config';
+
 
 const categorySchema = new mongoose.Schema(
   {
@@ -12,13 +14,18 @@ const categorySchema = new mongoose.Schema(
     slug: {
       type: String,
       lowercase: true,
-      required: true,
+      // required: true,
     },
     image: String,
     createdBy: { type: Types.ObjectId, res: "user" },
   },
   { timestamps: true, versionKey: false }
 );
+
+categorySchema.post("init", function (doc) {
+  
+  doc.image = process.env.SERVERURL + "/uploads/" + doc.image;
+});
 
 const categoryModel = mongoose.model("category", categorySchema);
 
