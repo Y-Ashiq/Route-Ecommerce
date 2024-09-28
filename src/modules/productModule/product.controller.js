@@ -1,5 +1,6 @@
 import ProductModel from "../../../database/model/product.model.js";
 import { handleError } from "../../middleware/handleError.js";
+import { apiFeatures } from "../../util/APIfeatures.js";
 
 const addProduct = handleError(async (req, res, next) => {
   req.body.images = req.files.images.map((ele) => ele.filename);
@@ -17,41 +18,14 @@ const getProduct = handleError(async (req, res, next) => {
 });
 
 const getProducts = handleError(async (req, res, next) => {
-  let page = req.params.page * 1 || 1;
-  if (req.query.page <= 0) page = 1;
-  let skip = (page - 1) * 5;
-
-  let filterObj = { ...req.query };
-  let excludedQuery = ["page", "sort", "keywords", "fields"];
-
-  excludedQuery.forEach((ele) => {
-    delete filterObj[ele];
-  });
-
-  filterObj = JSON.stringify(filterObj);
-  filterObj = filterObj.replace(/\gt|gte|lt|lte\b/g, (match) => `$${match}`);
-
-  let mongooseQuery = ProductModel.find(filterObj).limit(5).skip(skip);
-  if (req.params.sort) {
-    let sortBy = req.params.sort.split(",").join(" ");
-    mongooseQuery.sort(sortBy);
-  }
-
-  if (req.query.keyword) {
-    mongooseQuery.find({
-      $or: [
-        { title: { $regex: req.query.keyword, $options: "i" } },
-        { description: { $regex: req.query.keyword, $options: "i" } },
-      ],
-    });
-  }
-
-  if (req.query.fields) {
-    let fields = req.params.fields / split(",").join(" ");
-
-    mongooseQuery.select(fields);
-  }
-  const products = await mongooseQuery;
+  let apiFeature = new apiFeatures(ProductModel.find(), req.query)
+    .pagination()
+    .fields()
+    .search()
+    .sort()
+    .filter();
+    
+  const products = await apiFeature.mongooseQuery;
 
   products
     ? res.json({ message: "products", products })

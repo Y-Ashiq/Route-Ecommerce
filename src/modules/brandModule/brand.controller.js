@@ -1,5 +1,6 @@
 import BrandModel from "../../../database/model/brand.model.js"; 
 import { handleError } from "../../middleware/handleError.js";
+import { apiFeatures } from "../../util/APIfeatures.js";
 
 const addBrand = handleError(async (req, res, next) => {
   const brand = await BrandModel.create(req.body);
@@ -15,11 +16,19 @@ const getBrand =handleError( async (req, res, next) => {
 });
 
 const getBrands = handleError(async (req, res, next) => {
-  const categories = await BrandModel.find();
 
-  categories
-    ? res.json({ message: "categories", categories })
-    : res.json({ message: "brand not found", categories });
+  let apiFeature = new apiFeatures(BrandModel.find(), req.query)
+    .pagination()
+    .fields()
+    .search()
+    .sort()
+    .filter();
+    
+  const brands = await apiFeature.mongooseQuery;
+
+  brands
+    ? res.json({ message: "brands", brands })
+    : res.json({ message: "brand not found", brands });
 });
 
 const updateBrand = handleError(async (req, res, next) => {
