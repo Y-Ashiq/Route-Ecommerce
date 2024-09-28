@@ -18,14 +18,14 @@ const ProductSchema = new mongoose.Schema(
     slug: {
       type: String,
       lowercase: true,
-      required: true,
+      // required: true,
     },
-    imageCover: string,
+    imageCover: String,
     images: [String],
-    price: { type: number, required: true, min: 1 },
-    priceAfterDiscount: { type: number, min: 1 },
-    sold: { type: number },
-    stock: { type: number, min: 0 },
+    price: { type: Number, required: true, min: 1 },
+    priceAfterDiscount: { type: Number, min: 1 },
+    sold: { type: Number },
+    stock: { type: Number, min: 0 },
     category: {
       type: Types.ObjectId,
       ref: "category",
@@ -50,6 +50,14 @@ const ProductSchema = new mongoose.Schema(
   },
   { timestamps: true, versionKey: false }
 );
+
+
+ProductSchema.post("init", function (doc) {
+  
+  doc.imageCover = process.env.SERVERURL + "/uploads/" + doc.imageCover;
+  
+  doc.images =doc.images.map( ele=> process.env.SERVERURL + "/uploads/" + ele ) 
+});
 
 const ProductModel = mongoose.model("product", ProductSchema);
 

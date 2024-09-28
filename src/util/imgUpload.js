@@ -26,6 +26,14 @@ export const fileUpload = () => {
   return upload;
 };
 
+
+//upload single image
 export const imgUpload = (fieldName) => {
   return fileUpload().single(fieldName);
 };
+
+//upload many images
+export const fieldsUpload = (fieldName)=>{
+
+  return fileUpload().fields(fieldName)
+}

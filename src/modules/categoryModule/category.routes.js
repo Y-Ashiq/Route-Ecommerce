@@ -3,16 +3,22 @@ import categoriesController from "./category.controller.js";
 import { imgUpload } from "../../util/imgUpload.js";
 import { validation } from "../../middleware/validation.js";
 import { addCategorySchema, getIdSchema } from "./category.validation.js";
+import subCategoryRouter from "../subCategoryModule/subCategory.routes.js";
 
 const CategoryRouter = Router();
 
-CategoryRouter.post("/addCategory",imgUpload("image"),validation(addCategorySchema) ,categoriesController.addCategory);
+CategoryRouter.use("/:category/subCategory", subCategoryRouter);
 
-CategoryRouter.get("/getCategories", categoriesController.getCategories);
-
+CategoryRouter.route("/")
+  .post(
+    imgUpload("image"),
+    validation(addCategorySchema),
+    categoriesController.addCategory
+  )
+  .get(categoriesController.getCategories);
 
 CategoryRouter.route("/:id")
-  .get(validation(getIdSchema),categoriesController.getCategory)
+  .get(validation(getIdSchema), categoriesController.getCategory)
   .put(categoriesController.updateCategory)
   .delete(categoriesController.deleteCategory);
 

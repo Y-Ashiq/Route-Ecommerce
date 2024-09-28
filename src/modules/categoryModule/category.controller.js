@@ -1,9 +1,11 @@
 import categoryModel from "../../../database/model/category.model.js";
 import slugify from "slugify";
 import { handleError } from "../../middleware/handleError.js";
+import { apiFeatures } from "../../util/APIfeatures.js";
 
 const addCategory = handleError(async (req, res, next) => {
   //req.body.slug = slugify(req.body.name);
+  
   req.body.image = req.file.filename;
   
   const category = await categoryModel.create(req.body);
@@ -19,11 +21,18 @@ const getCategory = handleError(async (req, res, next) => {
 });
 
 const getCategories = handleError(async (req, res, next) => {
-  const categories = await categoryModel.find();
+  let apiFeature = new apiFeatures(categoryModel.find(), req.query)
+  .pagination()
+  .fields()
+  .search()
+  .sort()
+  .filter();
+  
+const categories = await apiFeature.mongooseQuery;
 
-  categories
-    ? res.json({ message: "categories", categories })
-    : res.json({ message: "category not found", categories });
+categories
+  ? res.json({ message: "categories", categories })
+  : res.json({ message: "category not found", categories });
 });
 
 const updateCategory = handleError(async (req, res, next) => {

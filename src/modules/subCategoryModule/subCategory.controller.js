@@ -1,53 +1,65 @@
 import subCategoryModel from "../../../database/model/subCategory.model.js";
 import slugify from "slugify";
 import { handleError } from "../../middleware/handleError.js";
+import { apiFeatures } from "../../util/APIfeatures.js";
 
-const addCategory = handleError(async (req, res, next) => {
+const addSubCategory = handleError(async (req, res, next) => {
   req.body.slug = slugify(req.body.name);
-  const category = await subCategoryModel.create(req.body);
-  res.json({ message: "category added", category });
+  const SubCategory = await subCategoryModel.create(req.body);
+  res.json({ message: "SubCategory added", SubCategory });
 });
 
-const getCategory = handleError(async (req, res, next) => {
-  const category = await subCategoryModel.findById(req.params.id);
+const getSubCategory = handleError(async (req, res, next) => {
+  const SubCategory = await subCategoryModel.findById(req.params.id);
 
   category
-    ? res.json({ message: "category ", category })
-    : res.json({ message: "category not found", category });
+    ? res.json({ message: "SubCategory ", SubCategory })
+    : res.json({ message: "SubCategory not found", SubCategory });
 });
 
-const getCategories = handleError(async (req, res, next) => {
-  const categories = await subCategoryModel.find();
+//
+const getSubCategories = handleError(async (req, res, next) => {
+  let apiFeature = new apiFeatures(
+    subCategoryModel.find({ category: req.params.category }),
+    req.query
+  )
+    .pagination()
+    .fields()
+    .search()
+    .sort()
+    .filter();
 
-  categories
-    ? res.json({ message: "categories", categories })
-    : res.json({ message: "category not found", categories });
+  const subCategories = await apiFeature.mongooseQuery;
+
+  subCategories
+    ? res.json({ message: "subCategories", subCategories })
+    : res.json({ message: "subCategory not found", subCategories });
 });
 
-const updateCategory = handleError(async (req, res, next) => {
+const updateSubCategory = handleError(async (req, res, next) => {
   if (req.body.name) {
     req.body.slug = slugify(req.body.name);
   }
 
-  const category = await subCategoryModel.findByIdAndUpdate(
+  const SubCategory = await subCategoryModel.findByIdAndUpdate(
     req.params.id,
     req.body
   );
-  res.json({ message: "category updated", category });
+  res.json({ message: "SubCategory updated", SubCategory });
 });
 
-const deleteCategory = handleError(async (req, res, next) => {
-  const category = await subCategoryModel.findByIdAndDelete(req.params.id);
+const deleteSubCategory = handleError(async (req, res, next) => {
+  const SubCategory = await subCategoryModel.findByIdAndDelete(req.params.id);
 
-  category
-    ? res.json({ message: "category deleted", category })
-    : res.json({ message: "category not found", category });
+  SubCategory
+    ? res.json({ message: "SubCategory deleted", SubCategory })
+    : res.json({ message: "SubCategory not found", SubCategory });
 });
 
 export default {
-  addCategory,
-  getCategories,
-  getCategory,
-  updateCategory,
-  deleteCategory,
+  addSubCategory,
+  getSubCategory,
+  getSubCategories,
+  updateSubCategory,
+  deleteSubCategory,
 };

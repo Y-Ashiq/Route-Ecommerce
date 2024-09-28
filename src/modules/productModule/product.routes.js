@@ -1,13 +1,27 @@
 import { Router } from "express";
-import brandControllers from "./product.controller.js";
+import ProductControllers from "./product.controller.js";
+import { fieldsUpload } from "../../util/imgUpload.js";
 
-const BrandRouter = Router();
+const ProductRouter = Router();
 
-BrandRouter.post("/addCategory", brandControllers.addBrand);
-BrandRouter.get("/getCategories", brandControllers.getBrands);
-BrandRouter.route("/:id")
-  .get(brandControllers.getBrand)
-  .put(brandControllers.updateBrand)
-  .delete(brandControllers.deleteBrand);
+ProductRouter.post(
+  "/",
+  fieldsUpload([
+    { name: "imageCover", maxCount: 1 },
+    { name: "images", maxCount: 10 },
+  ]),
+  ProductControllers.addProduct
+);
+ProductRouter.get("/", ProductControllers.getProducts);
+ProductRouter.route("/:id")
+  .get(ProductControllers.getProduct)
+  .patch(
+    fieldsUpload([
+      { name: "imageCover", maxCount: 1 },
+      { name: "images", maxCount: 10 },
+    ]),
+    ProductControllers.updateProduct
+  )
+  .delete(ProductControllers.deleteProduct);
 
-export default BrandRouter;
+export default ProductRouter;

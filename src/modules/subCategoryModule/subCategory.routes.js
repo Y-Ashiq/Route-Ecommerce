@@ -1,14 +1,14 @@
 import { Router } from "express";
 import subCategoriesController from "./subCategory.controller.js";
 
-const subCategoryRouter = Router();
+const subCategoryRouter = Router({mergeParams:true});
 
-subCategoryRouter.post("/addCategory", subCategoriesController.addCategory);
-subCategoryRouter.get("/getCategories", subCategoriesController.getCategories);
+subCategoryRouter.post("/", subCategoriesController.addSubCategory);
+subCategoryRouter.get("/", subCategoriesController.getSubCategories);
 subCategoryRouter
   .route("/:id")
-  .get(subCategoriesController.getCategory)
-  .put(subCategoriesController.updateCategory)
-  .delete(subCategoriesController.deleteCategory);
+  .get(subCategoriesController.getSubCategory)
+  .put(subCategoriesController.updateSubCategory)
+  .delete(subCategoriesController.deleteSubCategory);
 
 export default subCategoryRouter;
