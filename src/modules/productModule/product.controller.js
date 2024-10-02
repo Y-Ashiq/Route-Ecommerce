@@ -18,13 +18,14 @@ const getProduct = handleError(async (req, res, next) => {
 });
 
 const getProducts = handleError(async (req, res, next) => {
+  console.log(req.query);
   let apiFeature = new apiFeatures(ProductModel.find(), req.query)
     .pagination()
     .fields()
     .search()
     .sort()
     .filter();
-    
+
   const products = await apiFeature.mongooseQuery;
 
   products

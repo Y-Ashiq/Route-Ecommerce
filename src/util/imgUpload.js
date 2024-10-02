@@ -8,7 +8,7 @@ export const fileUpload = () => {
       cb(null, "./uploads");
     },
     filename: (req, file, cb) => {
-      cb(null, uuidv4() + "-" + file.originalname);
+      cb(null, uuidv4() + "-" + file.originalname.replace(/ /g,""));
     },
   });
 
