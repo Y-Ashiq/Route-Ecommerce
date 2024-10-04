@@ -1,6 +1,4 @@
 export class apiFeatures {
-
-
   constructor(mongooseQuery, queryString) {
     this.mongooseQuery = mongooseQuery;
     this.queryString = queryString;
@@ -10,23 +8,29 @@ export class apiFeatures {
     let page = this.queryString.page * 1 || 1;
     if (this.queryString.page <= 0) page = 1;
     let skip = (page - 1) * 5;
-    this.page = page
+    this.page = page;
     this.mongooseQuery.skip(skip).limit(5);
     return this;
   }
 
   filter() {
-    let filterObj = { ...this.queryString };
-    let excludedQuery = ["page", "sort", "keywords", "fields"];
+    if (this.queryString.filter) {
+      let filterObj = { ...this.queryString };
+      let excludedQuery = ["page", "sort", "keywords", "fields"];
 
-    excludedQuery.forEach((ele) => {
-      delete filterObj[ele];
-    });
+      excludedQuery.forEach((ele) => {
+        delete filterObj[ele];
+      });
 
-    filterObj = JSON.stringify(filterObj);
-    filterObj = filterObj.replace(/\gt|gte|lt|lte\b/g, (match) => `$${match}`);
+      filterObj = JSON.stringify(filterObj);
+      filterObj = filterObj.replace(
+        /\bgt|gte|lt|lte\b/g,
+        (match) => `$${match}`
+      );
 
-    this.mongooseQuery.find(filterObj);
+      this.mongooseQuery.find({ filterObj });
+    }
+
     return this;
   }
 
@@ -42,8 +46,8 @@ export class apiFeatures {
     if (this.queryString.keyword) {
       this.mongooseQuery.find({
         $or: [
-          { title: { $regex: req.query.keyword, $options: "i" } },
-          { description: { $regex: req.query.keyword, $options: "i" } },
+          { title: { $regex: this.queryString.keyword, $options: "i" } },
+          { description: { $regex: this.queryString.keyword, $options: "i" } },
         ],
       });
     }
@@ -51,7 +55,7 @@ export class apiFeatures {
   }
 
   fields() {
-    if (this.queryString.ields) {
+    if (this.queryString.fields) {
       let fields = req.params.fields.split(",").join(" ");
 
       this.mongooseQuery.select(fields);

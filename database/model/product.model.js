@@ -48,17 +48,31 @@ const ProductSchema = new mongoose.Schema(
       max: 5,
     },
   },
-  { timestamps: true, versionKey: false }
+  {
+    timestamps: true,
+    versionKey: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
-
 ProductSchema.post("init", function (doc) {
-  
   doc.imageCover = process.env.SERVERURL + "/uploads/" + doc.imageCover;
-  
-  doc.images =doc.images.map( ele=> process.env.SERVERURL + "/uploads/" + ele ) 
+
+  doc.images = doc.images.map(
+    (ele) => process.env.SERVERURL + "/uploads/" + ele
+  );
 });
 
+ProductSchema.virtual("reviews", {
+  ref: "review",
+  localField: "_id",
+  foreignField: "productId",
+});
+
+ProductSchema.pre(/^find/, function () {
+  this.populate("reviews");
+});
 const ProductModel = mongoose.model("product", ProductSchema);
 
 export default ProductModel;

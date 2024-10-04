@@ -4,10 +4,10 @@ import { handleError } from "../../middleware/handleError.js";
 import { apiFeatures } from "../../util/APIfeatures.js";
 
 const addCategory = handleError(async (req, res, next) => {
-  //req.body.slug = slugify(req.body.name);
-  
+  req.body.slug = slugify(req.body.name);
+
   req.body.image = req.file.filename;
-  
+
   const category = await categoryModel.create(req.body);
   res.json({ message: "category added", category });
 });
@@ -22,17 +22,17 @@ const getCategory = handleError(async (req, res, next) => {
 
 const getCategories = handleError(async (req, res, next) => {
   let apiFeature = new apiFeatures(categoryModel.find(), req.query)
-  .pagination()
-  .fields()
-  .search()
-  .sort()
-  .filter();
-  
-const categories = await apiFeature.mongooseQuery;
+    .pagination()
+    .fields()
+    .search()
+    .sort()
+    .filter();
 
-categories
-  ? res.json({ message: "categories", categories })
-  : res.json({ message: "category not found", categories });
+  const categories = await apiFeature.mongooseQuery;
+
+  categories
+    ? res.json({ message: "categories", categories })
+    : res.json({ message: "category not found", categories });
 });
 
 const updateCategory = handleError(async (req, res, next) => {
