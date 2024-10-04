@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema(
@@ -14,6 +14,8 @@ const userSchema = new mongoose.Schema(
 
     password: { type: String, required: true },
 
+    wishlist: { type: Types.ObjectId, ref: "product" },
+
     phone: String,
 
     role: { type: String, enum: ["user", "admin"], default: "user" },
@@ -21,7 +23,7 @@ const userSchema = new mongoose.Schema(
     confirmEmail: { type: Boolean, default: false },
 
     isBlocked: { type: Boolean, default: false },
-    changePasswordAt : Date
+    changePasswordAt: Date,
   },
 
   { timestamps: true, versionKey: false }
